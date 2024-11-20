@@ -4,7 +4,6 @@ import { database } from "../utils/FirebaseConfig";
 import React, { useEffect, useState } from "react";
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-
 export default function YogaClassScreen({ navigation }: { navigation: any }) {
     const [classes, setClasses] = useState<any[]>([]);
     const [filteredClasses, setFilteredClasses] = useState<any[]>([]);
@@ -32,6 +31,10 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
 
     const handleDateChange = (event: any, selectedDate: Date | undefined) => {
         const currentDate = selectedDate || new Date();
+        if (event.type === 'dismissed') {
+            setShowDatePicker(false);
+            return;
+        }
         setShowDatePicker(false);
         setSelectedDate(currentDate);
         filterClasses(searchText, currentDate);
@@ -41,7 +44,6 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-
         return `${day}/${month}/${year}`;
     };
 
@@ -60,6 +62,11 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
         }
 
         setFilteredClasses(filtered);
+    };
+
+    const unselectDate = () => {
+        setSelectedDate(undefined);
+        filterClasses(searchText, undefined);
     };
 
     return (
@@ -83,6 +90,13 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
                         mode="date"
                         display="default"
                         onChange={handleDateChange}
+                    />
+                )}
+
+                {selectedDate && (
+                    <Button
+                        title="Unselect Date"
+                        onPress={unselectDate}
                     />
                 )}
             </View>
