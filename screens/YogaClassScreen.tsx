@@ -11,6 +11,7 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [showDatePicker, setShowDatePicker] = useState(false);
 
+    //Get class data from firebase
     useEffect(() => {
         const classesRef = ref(database, "yoga_classes/");
         onValue(classesRef, (snapshot) => {
@@ -21,16 +22,20 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
             setClasses(classList);
             setFilteredClasses(classList);
         });
+        //Clean up listener when the component unmounts
         return () => off(classesRef);
     }, []);
 
+    //Handle search based on teacher name
     const handleSearch = (text: string) => {
         setSearchText(text);
         filterClasses(text, selectedDate);
     };
 
+    //Handle search based on date
     const handleDateChange = (event: any, selectedDate: Date | undefined) => {
         const currentDate = selectedDate || new Date();
+        //Close date picker
         if (event.type === 'dismissed') {
             setShowDatePicker(false);
             return;
@@ -40,6 +45,7 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
         filterClasses(searchText, currentDate);
     };
 
+    //Format date
     const formatDateToDDMMYYYY = (date: Date): string => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -47,6 +53,7 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
         return `${day}/${month}/${year}`;
     };
 
+    //Show class(es) based on teacher name and date
     const filterClasses = (search: string, date: Date | undefined) => {
         let filtered = classes;
 
@@ -64,6 +71,7 @@ export default function YogaClassScreen({ navigation }: { navigation: any }) {
         setFilteredClasses(filtered);
     };
 
+    //To remove date filter
     const unselectDate = () => {
         setSelectedDate(undefined);
         filterClasses(searchText, undefined);

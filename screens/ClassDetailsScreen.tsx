@@ -8,8 +8,10 @@ export default function ClassDetailsScreen({ route }: { route: any }) {
 
     const [course, setCourse] = useState<any>(null);
 
+    //Get course data from firebase
     useEffect(() => {
         const courseRef = ref(database, `yoga_courses/${yogaCourseId}`);
+        //Listener to get updated course data
         const unsubscribe = onValue(courseRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -19,9 +21,11 @@ export default function ClassDetailsScreen({ route }: { route: any }) {
             }
         });
 
+        //Clean up listener when the component unmounts
         return () => off(courseRef, 'value', unsubscribe);
     }, [yogaCourseId]);
 
+    //Show text when course data is not loaded yet
     if (!course) {
         return <Text>Loading...</Text>;
     }
